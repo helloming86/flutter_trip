@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:trip/dao/home_dao.dart';
+import 'package:trip/model/common/common_model.dart';
+import 'package:trip/model/home_model.dart';
+import 'package:trip/widget/grid_nav.dart';
+import 'package:trip/widget/local_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -17,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   double appBarAlpha = 0;
+  List<CommonModel> localNavList = [];
 
   _onScroll(offset) {
     double alpha = offset / APPBAR_SCROLL_OFFSET;
@@ -31,9 +37,29 @@ class _HomePageState extends State<HomePage> {
     // print(appBarAlpha);
   }
 
+  localData() async {
+    try {
+      HomeModel model = await HomeDao.fetch();
+      setState(() {
+        localNavList = model.localNavList;
+      });
+    } catch (e) {
+      setState(() {
+        print(e);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    localData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff2f2f2),
       body: Stack(
         children: <Widget>[
           MediaQuery.removePadding(
@@ -45,6 +71,7 @@ class _HomePageState extends State<HomePage> {
                     scrollNotification.depth == 0) {
                   _onScroll(scrollNotification.metrics.pixels);
                 }
+                return null;
               },
               child: ListView(
                 children: <Widget>[
@@ -62,6 +89,11 @@ class _HomePageState extends State<HomePage> {
                       pagination: SwiperPagination(),
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+                    child: LocalNav(localNavList: localNavList,),
+                  ),
+                  GridNav(gridNavModel: null, name: 'xx',),
                   Container(
                     height: 800,
                     child: ListTile(
