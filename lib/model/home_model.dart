@@ -4,19 +4,19 @@ import 'package:trip/model/common/grid_nav_model.dart';
 import 'package:trip/model/common/sales_box_model.dart';
 
 class HomeModel {
-  ConfigModel config;
-  List<CommonModel> bannerList;
-  List<CommonModel> localNavList;
-  GridNavModel gridNav;
-  List<CommonModel> subNavList;
-  SalesBoxModel salesBox;
+  final ConfigModel config;
+  final List<CommonModel> bannerList;
+  final List<CommonModel> localNavList;
+  final List<CommonModel> subNavList;
+  final GridNavModel gridNav;
+  final SalesBoxModel salesBox;
 
   HomeModel(
       {this.config,
       this.bannerList,
       this.localNavList,
-      this.gridNav,
       this.subNavList,
+      this.gridNav,
       this.salesBox});
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -32,11 +32,11 @@ class HomeModel {
     List<CommonModel> subNavList =
         subNavListJson.map((i) => CommonModel.fromJson(i)).toList();
     return HomeModel(
-      config: ConfigModel.fromJson(json['config']),
       bannerList: bannerList,
       localNavList: localNavList,
-      gridNav: GridNavModel.fromJson(json['gridNav']),
       subNavList: subNavList,
+      config: ConfigModel.fromJson(json['config']),
+      gridNav: GridNavModel.fromJson(json['gridNav']),
       salesBox: SalesBoxModel.fromJson(json['salesBox']),
     );
   }
