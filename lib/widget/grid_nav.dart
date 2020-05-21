@@ -25,7 +25,7 @@ class GridNav extends StatelessWidget {
   }
 
   _gridNavItems(BuildContext context) {
-    List<Widget> items = [];
+    List<Widget> items = []; // 注意，初始化为空数组很重要；否则，add会出错
     if (gridNavModel == null) return items;
     if (gridNavModel.hotel != null) {
       items.add(_gridNavItem(context, gridNavModel.hotel, true));
