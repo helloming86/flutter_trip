@@ -7,9 +7,11 @@ import 'package:trip/model/common/grid_nav_model.dart';
 import 'package:trip/model/common/sales_box_model.dart';
 import 'package:trip/model/home_model.dart';
 import 'package:trip/widget/grid_nav.dart';
+import 'package:trip/widget/loading_container.dart';
 import 'package:trip/widget/local_nav.dart';
 import 'package:trip/widget/sales_box.dart';
 import 'package:trip/widget/sub_nav.dart';
+import 'package:trip/widget/webview.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -19,17 +21,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _imagesUrls = [
-    'http://pages.ctrip.com/commerce/promote/20180718/yxzy/img/640sygd.jpg',
-    'http://pages.ctrip.com/commerce/promote/20180718/yxzy/img/640sygd.jpg',
-    'http://pages.ctrip.com/commerce/promote/20180718/yxzy/img/640sygd.jpg',
-  ];
+//  List _imagesUrls = [
+//    'http://pages.ctrip.com/commerce/promote/20180718/yxzy/img/640sygd.jpg',
+//    'http://pages.ctrip.com/commerce/promote/20180718/yxzy/img/640sygd.jpg',
+//    'http://pages.ctrip.com/commerce/promote/20180718/yxzy/img/640sygd.jpg',
+//  ];
 
   double appBarAlpha = 0;
+  List<CommonModel> bannerList = [];
   List<CommonModel> localNavList = [];
   List<CommonModel> subNavList = [];
   GridNavModel gridNavModel;
   SalesBoxModel salesBoxList;
+  bool _loading = true;
 
   _onScroll(offset) {
     double alpha = offset / APPBAR_SCROLL_OFFSET;
@@ -44,18 +48,21 @@ class _HomePageState extends State<HomePage> {
     // print(appBarAlpha);
   }
 
-  Future<Null> localData() async {
+  Future<Null> _handleRefresh() async {
     try {
       HomeModel model = await HomeDao.fetch();
       setState(() {
+        bannerList = model.bannerList;
         localNavList = model.localNavList;
         gridNavModel = model.gridNav;
         subNavList = model.subNavList;
         salesBoxList = model.salesBox;
+        _loading = false;
       });
     } catch (e) {
+      print(e);
       setState(() {
-        print(e);
+        _loading = false;
       });
     }
     return null;
@@ -64,86 +71,104 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    localData();
+    _handleRefresh();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xfff2f2f2),
-      body: Stack(
-        children: <Widget>[
-          MediaQuery.removePadding(
-            context: context,
-            removeTop: true,
-            child: NotificationListener(
-              onNotification: (scrollNotification) {
-                if (scrollNotification is ScrollUpdateNotification &&
-                    scrollNotification.depth == 0) {
-                  _onScroll(scrollNotification.metrics.pixels);
-                }
-                return null;
-              },
-              child: ListView(
-                children: <Widget>[
-                  Container(
-                    height: 160,
-                    child: Swiper(
-                      itemCount: _imagesUrls.length,
-                      autoplay: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Image.network(
-                          _imagesUrls[index],
-                          fit: BoxFit.fill,
-                        );
-                      },
-                      pagination: SwiperPagination(),
-                    ),
+      body: LoadingContainer(
+        isLoading: _loading,
+        child: Stack(
+          children: <Widget>[
+            MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: RefreshIndicator(
+                onRefresh: _handleRefresh,
+                child: NotificationListener(
+                  onNotification: (scrollNotification) {
+                    if (scrollNotification is ScrollUpdateNotification &&
+                        scrollNotification.depth == 0) {
+                      _onScroll(scrollNotification.metrics.pixels);
+                    }
+                    return null;
+                  },
+                  child: ListView(
+                    children: <Widget>[
+                      Container(
+                        height: 160,
+                        child: Swiper(
+                          itemCount: bannerList.length,
+                          autoplay: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Image.network(
+                              bannerList[index].icon,
+                              fit: BoxFit.fill,
+                            );
+                          },
+                          onTap: (index) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Webview(
+                                  url: bannerList[index].url,
+                                  hideAppBar: bannerList[index].hideAppBar,
+                                  title: bannerList[index].title,
+                                ),
+                              ),
+                            );
+                          },
+                          pagination: SwiperPagination(),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+                        child: LocalNav(
+                          localNavList: localNavList,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: GridNav(
+                          gridNavModel: gridNavModel,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: SubNav(
+                          subNavList: subNavList,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: SalesBox(
+                          salesBoxList: salesBoxList,
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
-                    child: LocalNav(
-                      localNavList: localNavList,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                    child: GridNav(
-                      gridNavModel: gridNavModel,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                    child: SubNav(
-                      subNavList: subNavList,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                    child: SalesBox(
-                      salesBoxList: salesBoxList,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Opacity(
-            opacity: appBarAlpha,
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Text('首页'),
                 ),
               ),
             ),
-          ),
-        ],
+            Opacity(
+              opacity: appBarAlpha,
+              child: Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Text('首页'),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
