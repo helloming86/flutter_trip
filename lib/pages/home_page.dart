@@ -4,9 +4,12 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:trip/dao/home_dao.dart';
 import 'package:trip/model/common/common_model.dart';
 import 'package:trip/model/common/grid_nav_model.dart';
+import 'package:trip/model/common/sales_box_model.dart';
 import 'package:trip/model/home_model.dart';
 import 'package:trip/widget/grid_nav.dart';
 import 'package:trip/widget/local_nav.dart';
+import 'package:trip/widget/sales_box.dart';
+import 'package:trip/widget/sub_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -24,7 +27,9 @@ class _HomePageState extends State<HomePage> {
 
   double appBarAlpha = 0;
   List<CommonModel> localNavList = [];
+  List<CommonModel> subNavList = [];
   GridNavModel gridNavModel;
+  SalesBoxModel salesBoxList;
 
   _onScroll(offset) {
     double alpha = offset / APPBAR_SCROLL_OFFSET;
@@ -45,6 +50,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         localNavList = model.localNavList;
         gridNavModel = model.gridNav;
+        subNavList = model.subNavList;
+        salesBoxList = model.salesBox;
       });
     } catch (e) {
       setState(() {
@@ -105,10 +112,16 @@ class _HomePageState extends State<HomePage> {
                       gridNavModel: gridNavModel,
                     ),
                   ),
-                  Container(
-                    height: 800,
-                    child: ListTile(
-                      title: Text('哈哈'),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                    child: SubNav(
+                      subNavList: subNavList,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                    child: SalesBox(
+                      salesBoxList: salesBoxList,
                     ),
                   ),
                 ],
