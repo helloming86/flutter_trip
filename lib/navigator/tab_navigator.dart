@@ -5,6 +5,8 @@ import 'package:trip/pages/my_page.dart';
 import 'package:trip/pages/search_page.dart';
 import 'package:trip/pages/travel_page.dart';
 
+const SEARCH_BAR_DEFAULT_TEXT = '网红打卡地 景点 酒店 美食';
+
 class TabNavigator extends StatefulWidget {
   @override
   _TabNavigatorState createState() => _TabNavigatorState();
@@ -24,7 +26,10 @@ class _TabNavigatorState extends State<TabNavigator> {
         controller: _controller,
         children: <Widget>[
           HomePage(),
-          SearchPage(),
+          SearchPage(
+            hideLeft: true,
+            hint: SEARCH_BAR_DEFAULT_TEXT,
+          ),
           TravelPage(),
           MyPage(),
         ],

@@ -6,6 +6,7 @@ import 'package:trip/model/common/common_model.dart';
 import 'package:trip/model/common/grid_nav_model.dart';
 import 'package:trip/model/common/sales_box_model.dart';
 import 'package:trip/model/home_model.dart';
+import 'package:trip/pages/search_page.dart';
 import 'package:trip/widget/grid_nav.dart';
 import 'package:trip/widget/loading_container.dart';
 import 'package:trip/widget/local_nav.dart';
@@ -197,7 +198,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _jumpToSearch() {}
+  _jumpToSearch() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return SearchPage(
+          hint: SEARCH_BAR_DEFAULT_TEXT,
+        );
+      }),
+    );
+  }
 
   _jumpToSpeak() {}
 }

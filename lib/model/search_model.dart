@@ -1,7 +1,8 @@
 class SearchModel {
+  String keyword;
   final List<SearchItem> data;
 
-  const SearchModel({this.data});
+  SearchModel({this.data});
 
   factory SearchModel.fromJson(Map<String, dynamic> json) {
     var dataJson = json['data'] as List;
@@ -35,8 +36,8 @@ class SearchItem {
       type: json['type'],
       price: json['price'],
       star: json['star'],
-      zoneName: json['zoneName'],
-      districtName: json['districtName'],
+      zoneName: json['zonename'],
+      districtName: json['districtname'],
       url: json['url'],
     );
   }

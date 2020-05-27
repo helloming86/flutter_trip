@@ -131,7 +131,7 @@ class _SearchBarState extends State<SearchBar> {
           _wrapTap(
             Container(
               padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child:Icon(
+              child: Icon(
                 Icons.comment,
                 color: _homeFontColor(),
                 size: 26,
@@ -192,8 +192,10 @@ class _SearchBarState extends State<SearchBar> {
                     ),
                     // 输入文本的样式
                     decoration: InputDecoration(
-                      // 搜索输入框文本样式 注销contentPadding 否则上下不居中，可能跟flutter本身有关
-                      // contentPadding: EdgeInsets.only(left: 5, bottom: 12, right: 5),
+                      // 搜索输入框文本样式
+                      // 初始化SearchBar时，hint不要为''，否则上下不居中，可能跟flutter本身有关
+                      contentPadding:
+                          EdgeInsets.only(left: 5, bottom: 12, right: 5),
                       border: InputBorder.none,
                       hintText: widget.hint ?? '',
                       hintStyle: TextStyle(fontSize: 15),
