@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trip/dao/search_dao.dart';
 import 'package:trip/widget/search_bar.dart';
 
 class SearchPage extends StatefulWidget {
@@ -8,6 +9,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  String showText = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,6 +25,21 @@ class _SearchPageState extends State<SearchPage> {
             },
             onChanged: _onTextChange,
           ),
+          InkWell(
+            onTap: () {
+              SearchDao.fetch(
+                      'https://m.ctrip.com/restapi/h5api/globalsearch/search?source=mobileweb&action=mobileweb&keyword=%E9%95%BF%E5%9F%8E')
+                  .then((value) {
+                setState(() {
+                  showText = value.data[0].url;
+                });
+              });
+            },
+            child: Text(
+              '验证Search接口',
+            ),
+          ),
+          Text(showText),
         ],
       ),
     );
