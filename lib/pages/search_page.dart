@@ -5,6 +5,22 @@ import 'package:trip/model/search_model.dart';
 import 'package:trip/widget/search_bar.dart';
 import 'package:trip/widget/webview.dart';
 
+const TYPES = [
+  'channelgroup',
+  'gs',
+  'plane',
+  'train',
+  'cruise',
+  'district',
+  'food',
+  'hotel',
+  'huodong',
+  'shop',
+  'sight',
+  'ticket',
+  'travelgroup'
+];
+
 const URL =
     'https://m.ctrip.com/restapi/h5api/globalsearch/search?source=mobileweb&action=mobileweb&keyword=';
 
@@ -128,19 +144,24 @@ class _SearchPageState extends State<SearchPage> {
         ),
         child: Row(
           children: <Widget>[
+            Container(
+              margin: EdgeInsets.all(1),
+              child: Image(
+                height: 26,
+                width: 26,
+                image: AssetImage(_typeImage(searchItem.type)),
+              ),
+            ),
             Column(
               children: <Widget>[
                 Container(
                   width: 300,
-                  child: Text(
-                    '${searchItem.word} ${searchItem.districtName ?? ''} ${searchItem.zoneName ?? ''}',
-                  ),
+                  child: _title(searchItem),
                 ),
                 Container(
                   width: 300,
-                  child: Text(
-                    '${searchItem.price ?? ''} ${searchItem.type ?? ''}',
-                  ),
+                  margin: EdgeInsets.only(top: 5),
+                  child: _subTitle(searchItem),
                 ),
               ],
             ),
@@ -148,5 +169,66 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
     );
+  }
+
+  // 处理显示图片类型
+  String _typeImage(String type) {
+    if (type == null) return 'images/type_travelgroup.png';
+    String path = 'travelgroup';
+    for (final val in TYPES) {
+      if (type.contains(val)) {
+        path = val;
+        break;
+      }
+    }
+    return 'images/type_$path.png';
+  }
+
+  _title(SearchItem searchItem) {
+    if (searchItem == null) return null;
+    List<TextSpan> spans = [];
+    spans.addAll(_keywordTextSpans(searchItem.word, searchModel.keyword));
+    spans.add(TextSpan(
+        text: ' ' +
+            (searchItem.districtName ?? '') +
+            ' ' +
+            (searchItem.zoneName ?? ''),
+        style: TextStyle(fontSize: 16, color: Colors.grey)));
+    return RichText(
+      text: TextSpan(children: spans),
+    );
+  }
+
+  _subTitle(SearchItem searchItem) {
+    return RichText(
+      text: TextSpan(children: <TextSpan>[
+        TextSpan(
+          text: searchItem.price ?? '',
+          style: TextStyle(fontSize: 16, color: Colors.orange),
+        ),
+        TextSpan(
+          text: ' ' + (searchItem.star ?? ''),
+          style: TextStyle(fontSize: 12, color: Colors.grey),
+        )
+      ]),
+    );
+  }
+
+  Iterable<TextSpan> _keywordTextSpans(String word, String keyword) {
+    List<TextSpan> spans = [];
+    if (word == null || word.length == 0) return spans;
+    List<String> arr = word.split(keyword);
+    TextStyle normalStyle = TextStyle(fontSize: 16, color: Colors.black87);
+    TextStyle keywordStyle = TextStyle(fontSize: 16, color: Colors.orange);
+    for (int i = 0; i < arr.length; i++) {
+      if ((i + 1) % 2 == 0) {
+        spans.add(TextSpan(text: keyword, style: keywordStyle));
+      }
+      String val = arr[i];
+      if (val != null && val.length > 0) {
+        spans.add(TextSpan(text: val, style: normalStyle));
+      }
+    }
+    return spans;
   }
 }
