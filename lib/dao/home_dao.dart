@@ -1,4 +1,4 @@
-import 'package:trip/model/home_model.dart';
+import 'package:trip/model/home/home_model.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;

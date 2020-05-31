@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trip/dao/search_dao.dart';
-import 'package:trip/model/search_model.dart';
+import 'package:trip/model/search/search_model.dart';
 import 'package:trip/widget/search_bar.dart';
 import 'package:trip/widget/webview.dart';
 

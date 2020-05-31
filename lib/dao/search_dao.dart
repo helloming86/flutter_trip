@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:trip/model/search_model.dart';
+import 'package:trip/model/search/search_model.dart';
 
 class SearchDao {
   static Future<SearchModel> fetch(String url, String text) async {

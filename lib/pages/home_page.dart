@@ -5,7 +5,7 @@ import 'package:trip/dao/home_dao.dart';
 import 'package:trip/model/common/common_model.dart';
 import 'package:trip/model/common/grid_nav_model.dart';
 import 'package:trip/model/common/sales_box_model.dart';
-import 'package:trip/model/home_model.dart';
+import 'package:trip/model/home/home_model.dart';
 import 'package:trip/pages/search_page.dart';
 import 'package:trip/widget/grid_nav.dart';
 import 'package:trip/widget/loading_container.dart';
