@@ -24,6 +24,7 @@ class _TabNavigatorState extends State<TabNavigator> {
     return Scaffold(
       body: PageView(
         controller: _controller,
+        physics: NeverScrollableScrollPhysics(), // 禁止PageView左右的滑动效果
         children: <Widget>[
           HomePage(),
           SearchPage(
