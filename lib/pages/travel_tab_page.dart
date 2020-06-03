@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:trip/dao/travel_dao.dart';
 import 'package:trip/model/travel/travel_model.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:trip/widget/loading_container.dart';
 import 'package:trip/widget/webview.dart';
 
 const _TRAVEL_URL =
@@ -23,37 +24,63 @@ class TravelTabPage extends StatefulWidget {
   _TravelTabPageState createState() => _TravelTabPageState();
 }
 
-class _TravelTabPageState extends State<TravelTabPage> with AutomaticKeepAliveClientMixin {
+class _TravelTabPageState extends State<TravelTabPage>
+    with AutomaticKeepAliveClientMixin {
   List<TravelItem> travelItems;
   int pageIndex = 1;
+  bool _loading = true;
+  ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     _loadData();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _loadData(loadMore: true);
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
-      body: StaggeredGridView.countBuilder(
-        // crossAxisCount 一屏显示几列
-        crossAxisCount: 2,
-        // itemCount，所有元素的数量
-        itemCount:
-            travelItems?.length ?? 0, // travelItems不为NULL返回length，为NULL返回0
-        itemBuilder: (BuildContext context, int index) =>
-            _TravelItem(index: index, item: travelItems[index]),
-        // staggeredTileBuilder 每个元素占据几列
-        staggeredTileBuilder: (int index) => StaggeredTile.fit(1),
+      body: LoadingContainer(
+        isLoading: _loading,
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          child: MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: StaggeredGridView.countBuilder(
+              controller: _scrollController,
+              // crossAxisCount 一屏显示几列
+              crossAxisCount: 2,
+              // itemCount，所有元素的数量
+              itemCount: travelItems?.length ??
+                  0, // travelItems不为NULL返回length，为NULL返回0
+              itemBuilder: (BuildContext context, int index) =>
+                  _TravelItem(index: index, item: travelItems[index]),
+              // staggeredTileBuilder 每个元素占据几列
+              staggeredTileBuilder: (int index) => StaggeredTile.fit(1),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  void _loadData() {
+  void _loadData({loadMore = false}) {
+    if (loadMore) {
+      pageIndex++;
+    } else {
+      pageIndex = 1;
+    }
     TravelDao.fetch(widget.travelUrl ?? _TRAVEL_URL, widget.params,
             widget.groupChannelCode, pageIndex, PAGE_SIZE)
         .then((model) {
+      _loading = false;
       setState(() {
         List<TravelItem> items = _filterItems(model.resultList);
         if (travelItems != null) {
@@ -62,7 +89,10 @@ class _TravelTabPageState extends State<TravelTabPage> with AutomaticKeepAliveCl
           travelItems = items;
         }
       });
-    }).catchError((e) => print(e));
+    }).catchError((e) {
+      _loading = false;
+      print(e);
+    });
   }
 
   List<TravelItem> _filterItems(List<TravelItem> resultList) {
@@ -81,6 +111,11 @@ class _TravelTabPageState extends State<TravelTabPage> with AutomaticKeepAliveCl
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
+  Future<Null> _handleRefresh() async {
+    _loadData();
+    return null;
+  }
 }
 
 class _TravelItem extends StatelessWidget {
