@@ -26,6 +26,8 @@ dependencies:
   flutter_swiper: ^1.1.4
   http: ^0.12.1
   flutter_webview_plugin: ^0.3.11
+  # 瀑布流布局
+  flutter_staggered_grid_view: ^0.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trip/dao/travel_tab_dao.dart';
 import 'package:trip/model/travel/travel_tab_model.dart';
+import 'package:trip/pages/travel_tab_page.dart';
 
 class TravelPage extends StatefulWidget {
   @override
@@ -68,7 +69,12 @@ class _TravelPageState extends State<TravelPage> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _controller,
               children: tabs.map((tab) {
-                return Text(tab.groupChannelCode);
+                return TravelTabPage(
+                  travelUrl: travelTabModel.url,
+                  // 注意，这里要有params，这是由获取旅拍页面内容json的接口决定的
+                  params: travelTabModel.params,
+                  groupChannelCode: tab.groupChannelCode,
+                );
               }).toList(),
             ),
           ),
