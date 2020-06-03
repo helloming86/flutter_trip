@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trip/widget/webview.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -10,8 +11,11 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text("个人中心"),
+      body: Webview(
+        url: 'https://m.ctrip.com/webapp/myctrip/',
+        hideAppBar: true,
+        backForbid: true,
+        statusBarColor: '4c5bca',
       ),
     );
   }
